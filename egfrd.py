@@ -454,7 +454,10 @@ class EGFRDSimulator(ParticleSimulatorBase):
             z0 = numpy.dot (shell_unit_z, projected_point - shell_center)
 
             #Very ugly hack to make the function converge for drawTime.
-            shell_radius = min( shell_radius, 10*pid_particle_pair[1].radius )
+            LD_MAX = 20
+            sigma = surface.shape.radius + pid_particle_pair[1].radius
+            shell_radius_max = LD_MAX * (r0 - sigma) + sigma
+            shell_radius = min( shell_radius, shell_radius_max )
 
             interaction = CylindricalSurfaceInteraction(domain_id, pid_particle_pair,
                                                         reaction_rules, structure,
