@@ -456,7 +456,9 @@ class EGFRDSimulator(ParticleSimulatorBase):
             #Very ugly hack to make the function converge for drawTime.
             LD_MAX = 20
             sigma = surface.shape.radius + pid_particle_pair[1].radius
-            shell_radius_max = LD_MAX * (r0 - sigma) + sigma
+            #print 'Interaction with cylinder. r0: %s' %(r0 - sigma)
+            #shell_radius_max = LD_MAX * (r0 - sigma) + sigma + pid_particle_pair[1].radius
+            shell_radius_max = 3. * sigma + pid_particle_pair[1].radius
             shell_radius = min( shell_radius, shell_radius_max )
 
             interaction = CylindricalSurfaceInteraction(domain_id, pid_particle_pair,
