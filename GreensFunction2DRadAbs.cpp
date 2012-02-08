@@ -1373,7 +1373,7 @@ GreensFunction2DRadAbs::makedp_m_at_aTable( RealVector& p_mTable,
             m++;
             if( m >= this->MAX_ORDER )				// If the number of terms is too large
             {
-                    std::cerr << "dp_m didn't converge (m=" << m << "), continuing..." << std::endl;
+                    //std::cerr << "dp_m didn't converge (m=" << m << "), continuing..." << std::endl;
                     break;
             }
 

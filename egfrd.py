@@ -445,21 +445,24 @@ class EGFRDSimulator(ParticleSimulatorBase):
                                                  zsink, interaction_rules, surface)
                                                  
         elif isinstance(surface, CylindricalSurface):
+            #print "p_pos, surf_pos: ", particle_pos, surface.shape.position
             particle_pos = self.world.cyclic_transpose(particle_pos, surface.shape.position)
             projected_point, r0 = surface.projected_point(particle_pos)
             shell_unit_r = normalize(particle_pos - projected_point)
+            #print particle_pos - projected_point
+            #print "p_pos, proj_pnt, r0, unit_r: ", particle_pos, projected_point, r0, shell_unit_r
 
             projected_point = self.world.cyclic_transpose(projected_point, shell_center)
 
             z0 = numpy.dot (shell_unit_z, projected_point - shell_center)
-
+            #print "proj_pnt2, shell_cntr, z0: ",projected_point, shell_center, z0
             #Very ugly hack to make the function converge for drawTime.
             LD_MAX = 20
             sigma = surface.shape.radius + pid_particle_pair[1].radius
-            #print 'Interaction with cylinder. r0: %s' %(r0 - sigma)
-            #shell_radius_max = LD_MAX * (r0 - sigma) + sigma + pid_particle_pair[1].radius
-            shell_radius_max = 3. * sigma + pid_particle_pair[1].radius
+            #shell_radius_max = sigma + pid_particle_pair[1].radius  + LD_MAX * (r0 - sigma)
+            shell_radius_max = 3 * sigma + pid_particle_pair[1].radius
             shell_radius = min( shell_radius, shell_radius_max )
+            #print r0 - math.sqrt( numpy.dot( particle_pos - projected_point, particle_pos - projected_point) )
 
             interaction = CylindricalSurfaceInteraction(domain_id, pid_particle_pair,
                                                         reaction_rules, structure,
@@ -757,7 +760,7 @@ class EGFRDSimulator(ParticleSimulatorBase):
                     product_pos_list = []
                     for _ in range(self.dissociation_retry_moves):
                         unit_vector3D = random_unit_vector()
-                        unit_vector2D = normalize(unit_vector3D - numpy.dot(unit_vector3D, reactant_structure.shape.unit_z))
+                        unit_vector2D = normalize(unit_vector3D - numpy.dot(unit_vector3D, reactant_structure.shape.unit_z) * reactant_structure.shape.unit_z)
                         vector = reactant_pos + vector_length * unit_vector2D
                         product_pos_list.append(vector)
                 else:
@@ -1290,7 +1293,8 @@ class EGFRDSimulator(ParticleSimulatorBase):
                 # In case there is really nothing
                 closest_overlap = numpy.inf
 
-            log.debug('Single or Multi: closest_overlap: %s' % (FORMAT_DOUBLE % closest_overlap))
+            if __debug__:
+                log.debug('Single or Multi: closest_overlap: %s' % (FORMAT_DOUBLE % closest_overlap))
 
             # If the closest partner is within the multi horizon we do Multi, otherwise Single
             if closest_overlap > 0.0: 

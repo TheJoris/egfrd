@@ -686,7 +686,7 @@ class CylindricalSurfaceInteraction(InteractionSingle):
     def greens_function(self):
         # The greens function not used for the interaction but for the other coordinate
         # Free diffusion in z direction, drift is zero.
-        return GreensFunction1DAbsAbs(self.D, 0.0, self.z0,
+        return GreensFunction1DAbsAbs(self.D, 0.0, 0.0,
                                       -self.get_inner_dz_left(),
                                       self.get_inner_dz_right())
 
