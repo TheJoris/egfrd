@@ -573,7 +573,7 @@ const void GreensFunction2DRadAbs::decideOnMethod2(size_t n,
         // than the expected margin, increase number of would-be correct 
         // guesses.
         if (fabs(1-dx/estimated_alpha_root_distance_) < INTERVAL_MARGIN) {
-            ++alpha_correctly_estimated_[n];            
+            ++alpha_correctly_estimated_[n];
         } else {
             alpha_correctly_estimated_[n] = 0;
         }   
@@ -616,43 +616,45 @@ const Real GreensFunction2DRadAbs::getAlpha( size_t n,               // order
     // # Calculating the root
 
     // Only calculates the root is this has not been done already
-    if (alphaTable[i] == 0)		
-    {        
-    
-        // Method 1. SCANNING. If the roots are not expected to lie close enough 
-        // to the estimate, use the "scanning" procedure to find an interval 
-        // that contains a root. (More robust method.)
-        //      If it is established that we can use method 2, 
-        // alpha_x_scan_table_[n] will contain a value < 0.
-	    if (alpha_x_scan_table_[n] >= 0)
-	    {		        
-	        // ### Gets estimate of interval by sign-change-searching
-	        //      high and low are the return-values of GiveRootInterval.
-	        GiveRootInterval(low, high, n);	        
-	        
-	        // ### Finds the root using the GSL rootfinder
-            current_root_ = getAlphaRoot(low, high, n);
+    for(unsigned int j = 0; j <= i; j++)
+    {
+        if (alphaTable[j] == 0)		
+        {        
+            // Method 1. SCANNING. If the roots are not expected to lie close enough 
+            // to the estimate, use the "scanning" procedure to find an interval 
+            // that contains a root. (More robust method.)
+            //      If it is established that we can use method 2, 
+            // alpha_x_scan_table_[n] will contain a value < 0.
+	        if (alpha_x_scan_table_[n] >= 0)
+	        {		        
+	            // ### Gets estimate of interval by sign-change-searching
+	            //      high and low are the return-values of GiveRootInterval.
+	            GiveRootInterval(low, high, n);	        
+	        	        
+	            // ### Finds the root using the GSL rootfinder
+                current_root_ = getAlphaRoot(low, high, n);
             
-            // ### Puts the found root in the table.
-		    alphaTable[i]= current_root_;
+                // ### Puts the found root in the table.
+		        alphaTable[j]= current_root_;
 		    		    
-		    // Check if we can use method 2 for next roots
-		    decideOnMethod2(n, i);		    
-	    }
-	    // Method 2. ASSUMING ROOTS AT ~FIXED INTERVAL. If next root is expected 
-	    // to lie at distance close enough to estimated distance the root finder 
-	    // can be called using a simple estimated interval.
-	    else 
-	    {
-            // ### Get interval by simple extrapolation
-	        GiveRootIntervalSimple(low, high, n, i);	        
+		        // Check if we can use method 2 for next roots
+		        decideOnMethod2(n, j);		    
+	        }
+	        // Method 2. ASSUMING ROOTS AT ~FIXED INTERVAL. If next root is expected 
+	        // to lie at distance close enough to estimated distance the root finder 
+	        // can be called using a simple estimated interval.
+	        else 
+	        {
+                // ### Get interval by simple extrapolation
+	            GiveRootIntervalSimple(low, high, n, j);	        
 	    
-	        // ### Finds the root using the GSL rootfinder
-            current_root_ = getAlphaRoot(low, high, n);
+	            // ### Finds the root using the GSL rootfinder
+                current_root_ = getAlphaRoot(low, high, n);
 
-            // ### Puts the found root in the table.
-		    alphaTable[i] = current_root_;		    
-	    }
+                // ### Puts the found root in the table.
+		        alphaTable[j] = current_root_;		    
+	        }
+        }
     }
     
     return alphaTable[i];
@@ -773,15 +775,15 @@ GreensFunction2DRadAbs::p_survival_table( const Real t,
     if( maxi == this->MAX_ALPHA_SEQ )
         std::cerr << " p_survival_table (used by drawTime) couldn't converge; max terms reached: " << maxi << std::endl;
            
-        if( psurvTable.size() < maxi + 1 )		// if the dimensions are good then this means
-        {						// that the table is filled
-        	IGNORE_RETURN getAlpha( 0, maxi );	// this updates the table of roots
-                this->createPsurvTable( psurvTable);	// then the table is filled with data
-        }
-        p = funcSum_all( boost::bind( &GreensFunction2DRadAbs::p_survival_i_exp_table,
-                                          this,
-                                          _1, t, psurvTable ),
-                         maxi );	// calculate the sum at time t
+    if( psurvTable.size() < maxi + 1 )		// if the dimensions are good then this means
+    {						// that the table is filled
+    	IGNORE_RETURN getAlpha( 0, maxi );	// this updates the table of roots
+        this->createPsurvTable( psurvTable);	// then the table is filled with data
+    }
+    p = funcSum_all( boost::bind( &GreensFunction2DRadAbs::p_survival_i_exp_table,
+                                      this,
+                                      _1, t, psurvTable ),
+                     maxi );	// calculate the sum at time t
 
         return p*M_PI*M_PI_2;
 }

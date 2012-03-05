@@ -281,7 +281,7 @@ public:
         if(!bounced)
         {   
             particle_id_pair particle_to_update( pp.first, 
-                        particle_type(pp_species.id(), particle_shape_type(new_pos, r0), pp_species.D()) );
+                        particle_type(pp_species.id(), particle_shape_type(new_pos, r0), pp_species.D(), pp_species.v()) );
                 
             if (vc_)
             {
@@ -328,6 +328,13 @@ private:
                 switch (::size(products))
                 {
                 case 0:
+                    if (rrec_)
+                    {
+                        /* Ugly Hack, rrec should pass empty as product, not the decayed particle! */
+                        (*rrec_)(
+                            reaction_record_type(
+                               r.id(), array_gen(pp.first) ,pp.first));
+                    }
                     tx_.remove_particle(pp.first);
                     break;
 
@@ -613,8 +620,16 @@ private:
                     }
                 case 0:
                     {
+                        /* Ugly Hack, rrec should pass empty as product, not the decayed particle! */
+                        if (rrec_)
+                        {
+                            (*rrec_)(
+                               reaction_record_type(
+                                r.id(), array_gen(pp0.first), pp0.first, pp1.first));
+                        }
                         remove_particle(pp0.first);
                         remove_particle(pp1.first);
+                        
                         break;
                     }
                 
@@ -692,6 +707,13 @@ private:
                     }
                 case 0:
                     {
+                        /* Ugly Hack, rrec should pass empty as product, not the decayed particle! */
+                        if (rrec_)
+                        {
+                            (*rrec_)(
+                               reaction_record_type(
+                                r.id(), array_gen(pp.first), pp.first));
+                        }                        
                         remove_particle(pp.first);
                         break;
                     }

@@ -225,6 +225,65 @@ def throw_in_particles(world, sid, n):
         elif __debug__:
             log.info('\t%d-th particle rejected. I will keep trying.' % i)
 
+def throw_in_particles_on_the_fly(world, s, sid, n):
+    """Add n particles of a certain Species to the specified world while
+    the simulator (s) is running.
+
+    Arguments:
+        - sid
+            a Species previously created with the function 
+            model.Species.
+        - n
+            the number of particles to add.
+    """
+    species = world.get_species(sid)
+    structure = world.get_structure(species.structure_id)
+
+    if __debug__:
+        name = world.model.get_species_type_by_id(sid)["name"]
+        if name[0] != '(':
+            name = '(' + name + ')'
+        log.info('\n\tthrowing in %s particles of type %s to %s' %
+                 (n, name, structure.id))
+
+    # This is a bit messy, but it works.
+    i = 0
+    while i < int(n):
+        position = structure.random_position(myrandom.rng)
+        position = apply_boundary(position, world.world_size)
+        
+        # First burst tha volume.
+        s.burst_volume(position, species.radius)
+
+        # Then check overlap.
+        if not world.check_overlap((position, species.radius)):
+            create = True
+            # Check if not too close to a neighbouring structures for 
+            # particles added to the world, or added to a self-defined 
+            # box.
+            if isinstance(structure, _gfrd.CuboidalRegion):
+                surface, distance = get_closest_surface(world, position, [])
+                if(surface and
+                   distance < surface.minimal_distance(species.radius)):
+                    if __debug__:
+                        log.info('\t%d-th particle rejected. Too close to '
+                                 'surface. I will keep trying.' % i)
+                    create = False
+            if create:
+                # All checks passed. Create particle.
+                pid_particle_pair = world.new_particle(sid, position)
+                
+                single = s.create_single(pid_particle_pair)
+
+                s.add_domain_event(single)
+            
+                i += 1
+                if __debug__:
+                    log.info('On the fly created particle: %s,\n %s' % (pid_particle_pair[0], pid_particle_pair[1]))
+        
+        elif __debug__:
+            log.info('\t%d-th particle rejected. I will keep trying.' % i)
+
 def place_particle(world, sid, position):
     """Place a particle of a certain Species at a specific position in 
     the specified world.

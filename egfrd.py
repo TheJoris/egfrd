@@ -459,8 +459,8 @@ class EGFRDSimulator(ParticleSimulatorBase):
             #Very ugly hack to make the function converge for drawTime.
             LD_MAX = 20
             sigma = surface.shape.radius + pid_particle_pair[1].radius
-            #shell_radius_max = sigma + pid_particle_pair[1].radius  + LD_MAX * (r0 - sigma)
-            shell_radius_max = 3 * sigma + pid_particle_pair[1].radius
+            shell_radius_max = sigma + pid_particle_pair[1].radius  + LD_MAX * (r0 - sigma)
+            #shell_radius_max = 3 * sigma + pid_particle_pair[1].radius
             shell_radius = min( shell_radius, shell_radius_max )
             #print r0 - math.sqrt( numpy.dot( particle_pos - projected_point, particle_pos - projected_point) )
 
@@ -731,7 +731,9 @@ class EGFRDSimulator(ParticleSimulatorBase):
             # 4. process the changes (remove particle, make new ones)
             self.world.remove_particle(reactant[0])
             products = []
-
+            self.reaction_events += 1
+            self.last_reaction = (rr, (reactant[1], None), products)
+            
             # 5. No new single to be made
             # 6. Log the change
 

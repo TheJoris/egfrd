@@ -829,9 +829,9 @@ class CylindricalSurfaceSink(InteractionSingle):
             else:
                 z = draw_r_wrapper(gf, dt, self.get_inner_a(), -self.get_inner_a())
 
-        # Add displacement to shell.shape.position, not to particle.position.
-        z_vector = self.structure.shape.unit_z * z
-        newpos = self.shell.shape.position + z_vector
+            # Add displacement to shell.shape.position, not to particle.position.
+            z_vector = self.structure.shape.unit_z * z
+            newpos = self.shell.shape.position + z_vector
 
         return newpos
 

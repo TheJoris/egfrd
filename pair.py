@@ -373,7 +373,7 @@ class SimplePair(Pair):
         D2 = self.pid_particle_pair2[1].D
 
         LD_MAX = self.LD_MAX # temporary value
-        a_r_max = LD_MAX * (r0 - self.sigma) + self.sigma
+        a_r_max = (r0 - self.sigma) + 1.05 * self.sigma #LD_MAX * (r0 - self.sigma) + self.sigma
         # a_r_max is the maximum size of a_r for a given maximum ratio of l/delta
 
         # Make sure that D1 != 0 to avoid division by zero in the followings.
