@@ -612,11 +612,15 @@ const Real GreensFunction2DRadAbs::getAlpha( size_t n,               // order
     {
         alphaTable.resize( i+1, 0 );	
     }
+    else
+    {
+        return alphaTable[i];
+    }
 
     // # Calculating the root
 
     // Only calculates the root is this has not been done already
-    for(unsigned int j = 0; j <= i; j++)
+    for(unsigned int j = oldSize; j <= i; j++)
     {
         if (alphaTable[j] == 0)		
         {        
@@ -1457,6 +1461,9 @@ GreensFunction2DRadAbs::drawTheta( const Real rnd,
 					   const Real r, 
 					   const Real t ) const
 {
+	//Ugly Hack: Das is ja total einfach!
+	return rnd * M_PI;
+	
 	const Real sigma( this->getSigma() );
 	const Real a( this->geta() );
 	const Real D( this->getD() );

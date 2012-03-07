@@ -63,6 +63,7 @@ def draw_theta_wrapper(gf, r, dt):
         log.debug('        *drawTheta. ' + gf.__class__.__name__)
     try:
         theta = gf.drawTheta(rnd, r, dt)
+        #theta = rnd * numpy.pi
     except Exception, e:
         print 'gf.drawTheta() failed, %s, rnd = %g, r = %g, dt = %g; %s' %(str(e), rnd, r, dt, gf.dump())
         #ugly hack: When drawTheta fails, return uniformly distributed theta.
